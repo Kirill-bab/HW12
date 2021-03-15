@@ -21,8 +21,8 @@ namespace DepsWebApp.Authentication
             {
                 return AuthenticateResult.NoResult();
             }
-            var base64Credentials = authHeaderValue.ToString().Split(':');
-            if(! await _storage.TryGetUser((base64Credentials[0], base64Credentials[1])))
+            var base64Credentials = authHeaderValue.ToString().Split(' ')[1];
+            if (!await _storage.TryGetUser(base64Credentials))
             {
                 return AuthenticateResult.NoResult();
             }
@@ -40,6 +40,12 @@ namespace DepsWebApp.Authentication
             : base(options,loggerFactory,encoder, clock)
         {
             _storage = storage;
+        }
+
+        private static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
     }
 }

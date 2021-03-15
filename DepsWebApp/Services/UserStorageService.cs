@@ -11,10 +11,11 @@ namespace DepsWebApp.Services
     {
         private readonly ConcurrentBag<RegisterValidationModel> _users = new ConcurrentBag<RegisterValidationModel>();
 
-        public async Task<bool> TryGetUser((string, string) credentials)
+        public async Task<bool> TryGetUser(string encodedCredentials)
         {
-            var login = await Base64Decode(credentials.Item1);
-            var password = await Base64Decode(credentials.Item2);
+            var credentials = (await Base64Decode(encodedCredentials)).Split(':');
+            var login = credentials[0];
+            var password = credentials[1];
             if (_users.Where(u => u.Login == login && u.Password == password).ToList().Count != 0) return true;
             return false;
         }

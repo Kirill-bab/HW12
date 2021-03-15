@@ -34,35 +34,36 @@ namespace DepsWebApp_Tests
             }
         }
 
-        public static void Should_Return_StatusCode_400_When_Currencies_Are_Invalid(HttpClient httpClient)
+        public static void Should_Return_StatusCode_200_When_Authorized(HttpClient httpClient)
         {
             Tests.SeparatorLine();
+            var encodedData = System.Convert
+                .ToBase64String(System.Text.Encoding.UTF8
+                .GetBytes("Some_not_empty_login" + ":" + "Some_not_empty_password"));
+            var message = new HttpRequestMessage(HttpMethod.Get, "/rates/UAH/USD?amount=2000");
+            Console.WriteLine(encodedData);
+            message.Headers.Authorization = new System.Net.Http.Headers
+                .AuthenticationHeaderValue("custom", encodedData);
             var response = Task.Run(async () =>
             {
-                return await httpClient.GetAsync("/rates/Ugfsa/USD?amount=2000");
+                return await httpClient.SendAsync(message);
             }).Result;
 
-            Console.WriteLine("Test Get request /rates/Ugfsa/USD?amount=2000 performed!");
+            Console.WriteLine("Test Get request /rates/UAH/USD?amount=2000 performed!");
             var responseBody = Task.Run(async () =>
             {
                 return await response.Content.ReadAsStringAsync();
             }).Result;
-            Console.WriteLine($"Get request /rates/Ugfsa/USD?amount=2000 returned: {responseBody}\n with Status code: {response.StatusCode}");
+            Console.WriteLine($"Get request /rates/UAH/USD?amount=2000 returned: {responseBody}\n with Status code: {response.StatusCode}");
 
-            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                Console.WriteLine("Get request /rates/Ugfsa/USD?amount=2000 was successfull!");
+                Console.WriteLine("Get request /rates/UAH/USD?amount=2000 was successfull!");
             }
             else
             {
-                Console.WriteLine("Get request /rates/Ugfsa/USD?amount=2000 has failed!");
+                Console.WriteLine("Get request /rates/UAH/USD?amount=2000 has failed!");
             }
-        }
-
-        private static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
         }
     }
 }

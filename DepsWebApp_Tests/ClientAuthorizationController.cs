@@ -8,7 +8,7 @@ namespace DepsWebApp_Tests
 {
     class ClientAuthorizationController
     {
-        public static void Should_Return_StatusCode_2020_When_Parameters_Are_Valid(HttpClient httpClient)
+        public static void Should_Return_StatusCode_200_When_Parameters_Are_Valid(HttpClient httpClient)
         {
             Tests.SeparatorLine();
             var response = Task.Run(async () =>

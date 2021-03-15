@@ -80,7 +80,7 @@ namespace DepsWebApp
             app.UseMiddleware<RawDataLoggingMiddleware>();
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
