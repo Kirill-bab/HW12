@@ -4,34 +4,45 @@ using System.Linq;
 using System.Threading.Tasks;
 using DepsWebApp.Models;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace DepsWebApp.Services
 {
-    public class UserStorageService
+    public class UserStorageService : IUserStorageService
     {
-        private readonly ConcurrentBag<RegisterValidationModel> _users = new ConcurrentBag<RegisterValidationModel>();
+        private ILogger<UserStorageService> _logger;
+        private UserStorageContext _dbContext;
+
+        public UserStorageService(UserStorageContext dbContext, ILogger<UserStorageService> logger)
+        {
+            _logger = logger;
+            _dbContext = dbContext;
+        }
 
         public async Task<bool> TryGetUser(string encodedCredentials)
         {
             var credentials = (await Base64Decode(encodedCredentials)).Split(':');
             var login = credentials[0];
             var password = credentials[1];
-            if (_users.Where(u => u.Login == login && u.Password == password).ToList().Count != 0) return true;
+            var match = await _dbContext.Users.FirstOrDefaultAsync(u => u.Login == login);
+            if (match != default) return true;
             return false;
         }
 
-        public async Task<bool> TryAddUserAsync(RegisterValidationModel user)
+        public async Task<bool> TryAddUserAsync(RegisterValidationModel model)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
-                if (user == null) throw new ArgumentNullException(nameof(user));
-                if (_users.Where(u => u.Login == user.Login && u.Password == user.Password)
-                .ToList().Count != 0)
+                if (model == null) throw new ArgumentNullException(nameof(model));
+                var user = new User(model.Login, model.Password);
+            if (await _dbContext.Users.FirstOrDefaultAsync(u => u.Login == user.Login) is { })
                 {
-                    return Task.FromResult(false);
+                    return false;
                 }
-                _users.Add(user);
-                return Task.FromResult(true);
+                _dbContext.Users.Add(user);
+                await _dbContext.SaveChangesAsync();
+                return true;
             });
         }
 

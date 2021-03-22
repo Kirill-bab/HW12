@@ -23,13 +23,13 @@ namespace DepsWebApp.Controllers
     public class AuthorizationController : ControllerBase
     {
         private readonly ILogger<AuthorizationController> _logger;
-        private readonly UserStorageService _storage;
+        private readonly IUserStorageService _storage;
 
         /// <summary>
         /// public constructor of Authorization controller
         /// </summary>
         /// <param name="loggerFactory"></param>
-        public AuthorizationController(ILoggerFactory loggerFactory, UserStorageService storage)
+        public AuthorizationController(ILoggerFactory loggerFactory, IUserStorageService storage)
         {
             _logger = loggerFactory.CreateLogger<AuthorizationController>();
             _storage = storage;

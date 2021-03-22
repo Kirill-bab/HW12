@@ -14,6 +14,8 @@ using DepsWebApp.Models;
 using Microsoft.IO;
 using System.IO;
 using DepsWebApp.Authentication;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace DepsWebApp
 {
@@ -35,18 +37,20 @@ namespace DepsWebApp
                 .Configure<NbuClientOptions>(Configuration.GetSection("Client"))
                 .Configure<RatesOptions>(Configuration.GetSection("Rates"));
 
-            services.AddSingleton<UserStorageService>();
-
             services.AddAuthentication(CustomAuthSchema.Name)
                 .AddScheme<CustomAuthSchemaOptions, CustomAuthSchemaHandler>(
                 CustomAuthSchema.Name, CustomAuthSchema.Name, null);
 
             // Add application services
             services.AddScoped<IRatesService, RatesService>();
+            services.AddTransient<IUserStorageService, UserStorageService>();
 
             // Add NbuClient as Transient
             services.AddHttpClient<IRatesProviderClient, NbuClient>()
                 .ConfigureHttpClient(client => client.Timeout = TimeSpan.FromSeconds(10));
+
+            services.AddDbContext<UserStorageContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("UserStorageContext")), ServiceLifetime.Transient);
 
             // Add CacheHostedService as Singleton
             services.AddHostedService<CacheHostedService>();

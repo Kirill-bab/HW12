@@ -13,7 +13,7 @@ namespace DepsWebApp.Authentication
 {
     public class CustomAuthSchemaHandler : AuthenticationHandler<CustomAuthSchemaOptions>
     {
-        private readonly UserStorageService _storage;
+        private readonly IUserStorageService _storage;
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.ContainsKey(HeaderNames.Authorization)) return AuthenticateResult.NoResult();
@@ -36,7 +36,7 @@ namespace DepsWebApp.Authentication
             ILoggerFactory loggerFactory,
             UrlEncoder encoder,
             ISystemClock clock,
-            UserStorageService storage)
+            IUserStorageService storage)
             : base(options,loggerFactory,encoder, clock)
         {
             _storage = storage;

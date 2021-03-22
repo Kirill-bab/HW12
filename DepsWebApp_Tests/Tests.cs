@@ -12,11 +12,11 @@ namespace DepsWebApp_Tests
         static void Main(string[] args)
         {
             Setup();
-            ClientAuthorizationController.Should_Return_StatusCode_200_When_Parameters_Are_Valid(_httpClient);
+            /*ClientAuthorizationController.Should_Return_StatusCode_200_When_Parameters_Are_Valid(_httpClient);
             ClientAuthorizationController.Should_Return_StatusCode_400_When_Parameters_Are_Invalid(_httpClient);
             ClientAuthorizationController.Should_Return_StatusCode_409_When_User_Already_Exists(_httpClient);
             ClientRatesController.Should_Return_StatusCode_401_When_Unauthorized(_httpClient);
-            ClientRatesController.Should_Return_StatusCode_200_When_Authorized(_httpClient);
+            */ClientRatesController.Should_Return_StatusCode_200_When_Authorized(_httpClient);
         }
         private static HttpClient _httpClient;
 
